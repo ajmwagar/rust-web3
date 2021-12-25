@@ -352,17 +352,35 @@ mod contract_signing {
                 // `contract::Error` instead of more generic `Error`.
                 .map_err(|err| crate::error::Error::Decoder(format!("{:?}", err)))?;
             let accounts = Accounts::new(self.eth.transport().clone());
+
+            let Options {
+                gas,
+                gas_price,
+                value,
+                nonce,
+                transaction_type,
+                access_list,
+                max_fee_per_gas,
+                max_priority_fee_per_gas,
+                ..
+            } = options;
+
             let mut tx = TransactionParameters {
-                nonce: options.nonce,
+                nonce,
                 to: Some(self.address),
-                gas_price: options.gas_price,
+                gas_price,
                 data: Bytes(fn_data),
+                transaction_type,
+                access_list,
+                max_fee_per_gas,
+                max_priority_fee_per_gas,
                 ..Default::default()
             };
-            if let Some(gas) = options.gas {
+
+            if let Some(gas) = gas {
                 tx.gas = gas;
             }
-            if let Some(value) = options.value {
+            if let Some(value) = value {
                 tx.value = value;
             }
             let signed = accounts.sign_transaction(tx, key).await?;
