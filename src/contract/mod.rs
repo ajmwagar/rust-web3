@@ -62,7 +62,7 @@ impl Options {
 #[derive(Debug, Clone)]
 pub struct Contract<T: Transport> {
     address: Address,
-    eth: Eth<T>,
+    pub eth: Eth<T>,
     abi: ethabi::Contract,
 }
 
